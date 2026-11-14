@@ -31,6 +31,20 @@ app.post("/signup", async (req, res) => {
     }
 });
 
+app.delete("/user/:id", async (req, res) => {
+    const {id} = req.params
+    console.log(id)
+    try {
+        await User.findByIdAndDelete(id) 
+        res.status(200).send("User deleted successfully")
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({ message: 'Error deleting user', error });
+    }
+})
+
+app.
+
 connectDb().then(() => {
     app.listen(port, () => {
         console.log(`Server is running on http://localhost:${port}`);
