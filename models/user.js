@@ -11,7 +11,12 @@ const userSchema = new mongoose.Schema({
     }},
     age: { type: Number },
     gender: { type: String },
-    skills: {type: [String], required: true, default: null}
+    skills: {type: [String], required: true, default: null},
+    password: {type: String, validate(value) {
+        if(!validator.isStrongPassword(value)) {
+            throw new Error("Secure password needed")
+        }
+    }}
 }, {timestamps: true})
 
 const userModel = mongoose.model('users', userSchema);

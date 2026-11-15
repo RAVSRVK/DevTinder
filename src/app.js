@@ -2,6 +2,7 @@ const express = require('express');
 const { adminMiddleware } = require('../middlewares/auth');
 const User = require('../models/user'); // Import the User model
 const connectDb = require('./config/database'); // Connect to MongoDB
+const bcrypt = require("bcrypt")
 const app = express();
 const port = 3000;
 
@@ -27,9 +28,33 @@ app.get("/users", async (req, res) => {
     }
 });
 
+app.post("/login", async (req, res) => {
+    
+    try {
+        const {email, password} = req.body
+        const obj = await User.findOne({email})
+        if(!obj?.password) {
+            throw new Error("User Not Found")
+        }
+        console.log()
+        const isPwdTrue = await bcrypt.compare(password, obj.password) 
+        console.log("SSSSSSS", isPwdTrue)
+        if(isPwdTrue) {
+            res.send("Successfully Logged in")
+        } else {
+            res.send("Incorrect Password ")
+        }
+    } catch (error) {
+        res.status(400).send("Something is wrong", error.message)
+    }
+})
+
 app.post("/signup", async (req, res) => {
     try {
-        const user = new User(req.body);
+        const { firstName, lastName, email, password, skills } = req.body
+        const hashedPassword  = await bcrypt.hash(password, 10)
+        console.log(password, hashedPassword)
+        const user = new User({firstName, lastName, email, skills, password: hashedPassword});
         await user.save();
         res.status(201).json({ message: 'User created successfully', user });
     } catch (error) {
