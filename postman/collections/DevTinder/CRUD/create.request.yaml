@@ -1,0 +1,26 @@
+$kind: http-request
+url: http://localhost:3000/signup
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"firstName\": \"vamsi\",\r
+
+    \"lastName\": \"abb\",\r
+
+    \"email\": \"vamsi.k@example.com\",\r
+
+    \"isAdmin\": false,\r
+
+    \"age\": 30,\r
+
+    \"gender\": \"Male\",\r
+
+    \"skills\": [\"React\", \"Node\"],\r
+
+    \"mods\": \"select\"\r
+
+    }"
+examples: .resources/create.resources/examples
+order: 3000

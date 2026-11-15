@@ -7,10 +7,17 @@ const port = 3000;
 
 app.use(express.json());
 
+const isChangeAllowed = (keys) => {
+    const reqSkills = ["skills", "email", "gender", "firstName", "lastName" ]
+    console.log(Object.keys(keys), reqSkills)
+    return Object.keys(keys).includes(reqSkills)
+}
+
 
 app.get("/users", async (req, res) => {
     try {
         const {email} = req.body
+        if(!email) return User.find({})
        const p = await User.find({email })
        console.log(p)
        if(!p) res.status(404).send("user not found ")
@@ -22,8 +29,7 @@ app.get("/users", async (req, res) => {
 
 app.post("/signup", async (req, res) => {
     try {
-        const { firstName, lastName, email, password, age, gender } = req.body;
-        const user = new User({ firstName, lastName, email, password, age, gender });
+        const user = new User(req.body);
         await user.save();
         res.status(201).json({ message: 'User created successfully', user });
     } catch (error) {
@@ -43,7 +49,22 @@ app.delete("/user/:id", async (req, res) => {
     }
 })
 
-app.
+app.put("/user/:id", async (req, res) => {
+    // console.log(id, rest)
+    const {id} = req.params
+    try {
+        if(!isChangeAllowed(req.body)) {
+            throw new Error("Unrequired keys trying to modify")
+        }
+        
+        
+        const a = await User.findByIdAndUpdate(id, req.body, {returnDocument: 'after', runValidators: true})
+                res.status(200).send("User updated successfully")
+    } catch (error) {
+        res.send("SOmething went wrong -> ", error.message)
+        console.log(error.message)
+    }
+})
 
 connectDb().then(() => {
     app.listen(port, () => {
